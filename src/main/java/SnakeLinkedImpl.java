@@ -1,6 +1,7 @@
 import java.util.Arrays;
 
 public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
+
     private class Node<T> {
         private SnakeCell<T> cell; // Entry in list
         private Node<T> next; // Link to next node
@@ -41,7 +42,9 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         private void setNextNode(Node<T> nextNode)
         {
             next = nextNode;
-        } // end setNextNode
+        } 
+        
+
 	}
     private Node<T> head;
     private  T[] pending;
@@ -102,6 +105,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * which case nothing happens.
      * @throws IllegalStateException if the snake is not initialized
      */
+    @Override
     public void shrink(){
         checkInitialization();
         if (size==1) return;
@@ -133,9 +137,13 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
 
         int position = index + 1;
         Node<T> newNode = new Node<>(value, 0, 0);
-
+        SnakeCell<T> newCell = newNode.getCell();
+        int prevX;
+        int prevY; 
+        
         if(index==size){
             if(size==1){
+                newCell.setX()
                 // set new node x value to previous node's x value
                 // set new node's y value """"
             } 
@@ -146,8 +154,12 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
             }
         }
         else { //insertion at middle or at head\
-            Node old = getNodeAt(position);
-            SnakeCell<T> old = old.getCell();
+            Node<T> oldNode = getNodeAt(position);
+            SnakeCell<T> oldCell = oldNode.getCell();
+
+            // shift towards tail
+
+
     }
 
 
@@ -168,7 +180,24 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @throws IndexOutOfBoundsException if the index is invalid
      * @throws IllegalStateException if the snake is not initialized
      */
-    public void removeAt(int index);
+    @Override
+    public void removeAt(int index){
+        checkInitialization();
+        checkBounds(index);
+
+        if (size == 1) return;
+
+        for (int i = index; i < size - 1; i++) {
+            Node<T> currentNode = getNodeAt(i);
+            Node<T> nextNode = getNodeAt(i+1);
+            currentNode.setData(nextNode.getCell());
+        }
+
+        Node<T> tail = getNodeAt(size);
+        tail = null;
+        size--;
+
+    }
 
 
 
@@ -187,8 +216,12 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @throws IndexOutOfBoundsException if the index is invalid
      * @throws IllegalStateException if the snake is not initialized
      */
-    public SnakeCell<T> getAt(int index);
+    public SnakeCell<T> getAt(int index){
+        checkInitialization();
+        checkBounds(index);
 
+        return getNodeAt(index + 1).getCell();
+    }
 
 
 
@@ -204,12 +237,10 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @return the length of the snake
      * @throws IllegalStateException if the snake is not initialized
      */
-    public int length();
-
-
-
-
-
+    public int length(){
+        checkInitialization();
+        return size;
+    }
 
 
 
@@ -246,9 +277,11 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @return true if the snake occupies the given position, false otherwise
      * @throws IllegalStateException if the snake is not initialized
      */
-    public boolean checkCollision(int x, int y);
+    public boolean checkCollision(int x, int y){
+
+    }
 }
-}
+
 
 
 
@@ -295,10 +328,10 @@ public boolean isEmpty()
    } // end 
 
 
-   private Node getNodeAt(int givenPosition)
+   private Node<T> getNodeAt(int givenPosition)
 	{
 		assert !isEmpty() && (1 <= givenPosition) && (givenPosition <= size);
-		Node currentNode = head;
+		Node<T> currentNode = head;
 		
       // Traverse the chain to locate the desired node
       // (skipped if givenPosition is 1)
@@ -309,3 +342,55 @@ public boolean isEmpty()
       
 		return currentNode;
     }
+
+
+    public void add(int newPosition, SnakeCell<T> newEntry)
+	{
+ 		if ((newPosition >= 1) && (newPosition <= size + 1))
+		{
+			Node<T> newNode = new Node(newEntry);
+         
+			if (newPosition == 1)                  // Case 1
+			{
+				newNode.setNextNode(head);
+				head = newNode;
+			}
+			else									         // Case 2: list is not empty
+			{                                      // and newPosition > 1
+            Node<T> nodeBefore = getNodeAt(newPosition - 1);
+            Node<T> nodeAfter = nodeBefore.getNextNode();
+				newNode.setNextNode(nodeAfter);
+				nodeBefore.setNextNode(newNode);
+			} // end if
+         
+			size++;
+		}
+      else
+         throw new IndexOutOfBoundsException("Illegal position given to add operation.");
+   }
+
+
+   public void add(SnakeCell<T> newEntry) 	      // OutOfMemoryError possible
+	{
+		Node<T> newNode = new Node(newEntry);
+
+		if (isEmpty())
+			head = newNode;
+		else                              // Add to end of non-empty list
+		{
+			Node<T> tail = getNodeAt(size);
+			tail.setNextNode(newNode); // Make last node reference new node
+		} // end if	
+		
+		size++;
+	} 
+
+
+    public void setX(SnakeCell<T> cell, int x){
+        cell.x = x;
+    }
+
+    public void setY(SnakeCell<T> cell, int y){
+        cell.y = y;
+}
+
