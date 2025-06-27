@@ -180,7 +180,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         checkInitialization();
         int position = index + 1;
 
-        if(position <=0 0 || position > size){
+        if(position <= 0 || position > size){
             throw new IndexOutOfBoundsException("Index out of bounds: " + index);
         }
 
@@ -351,9 +351,11 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
             throw new IllegalArgumentException();
         }
 
-        for(int i = size; i>=0; i--){
-            getNodeAt(i+1).getCell().x = getNodeAt(i).getCell().x;
-            getNodeAt(i+1).getCell().y = getNodeAt(i).getCell().y;
+        for(int i = size; i>=2; i--){
+            Node<T> curr = getNodeAt(i);
+            Node<T> prev = getNodeAt(i-1);
+            curr.getCell().x = prev.getCell().x;
+            curr.getCell().y = prev.getCell().y;
         }
 
         Node<T> headNode = getNodeAt(1);
@@ -371,8 +373,9 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
                 }
 
         if(pendingGrows > 0){
-            Node<T> newTail = new Node<>(pending[0], 0, 0);
+            
             Node<T> oldTail = getNodeAt(size);
+            Node<T> newTail = new Node<>(pending[0], oldTail.getCell().x, oldTail.getCell().y);
             oldTail.setNextNode(newTail);
 
             for (int i = 0; i < pendingGrows - 1; i++) {
@@ -510,12 +513,12 @@ public boolean isEmpty()
 	} 
 
 
-    public void setX(SnakeCell<T> cell, int x){
-        cell.x = x;
-    }
+//     public void setX(SnakeCell<T> cell, int x){
+//         cell.x = x;
+//     }
 
-    public void setY(SnakeCell<T> cell, int y){
-        cell.y = y;
-}
+//     public void setY(SnakeCell<T> cell, int y){
+//         cell.y = y;
+// }
 
 }
