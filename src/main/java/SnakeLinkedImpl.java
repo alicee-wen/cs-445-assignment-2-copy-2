@@ -1,43 +1,49 @@
 import java.util.Arrays;
 
 public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
-    private class Node {
-        private T    data; // Entry in list
-        private Node next; // Link to next node
+    private class Node<T> {
+        private SnakeCell<T> cell; // Entry in list
+        private Node<T> next; // Link to next node
 
-        private Node(T dataPortion, int x, int y)
+        private Node(SnakeCell<T> newCell)
         {
-            data = dataPortion;
+            cell = newCell;
             next = null;	
         } // end constructor
 
-        private Node(T dataPortion, int x, int y, Node nextNode)
+        private Node(T newCellValue, int x, int y)
         {
-            data = dataPortion;
+            cell = new SnakeCell<>(x, y, newCellValue);
+            next = null;	
+        } // end constructor
+
+        private Node(SnakeCell<T> newCell, Node<T> nextNode)
+        {
+            cell = newCell;
             next = nextNode;	
         } // end constructor
 
-        private T getData()
+        private SnakeCell<T> getCell()
         {
-            return data;
+            return cell;
         } // end getData
 
-        private void setData(T newData)
+        private void setData(SnakeCell<T> newData)
         {
-            data = newData;
+            cell = newData;
         } // end setData
 
-        private Node getNextNode()
+        private Node<T> getNextNode()
         {
             return next;
         } // end getNextNode
 
-        private void setNextNode(Node nextNode)
+        private void setNextNode(Node<T> nextNode)
         {
             next = nextNode;
         } // end setNextNode
 	}
-    private Node head;
+    private Node<T> head;
     private  T[] pending;
     private int size = 0;
     private int pendingGrows;
@@ -102,8 +108,8 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
 
         assert !isEmpty();
 
-        Node tail = getNodeAt(size);
-        tail = null;
+        Node<T> oldTail = getNodeAt(size);
+        oldTail = null;
         size--;
     }
 
@@ -120,7 +126,29 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @throws IndexOutOfBoundsException if the index is invalid
      * @throws IllegalStateException if the snake is not initialized
      */
-    public void insertAt(int index, T value);
+    public void insertAt(int index, T value){
+        
+        checkInitialization();
+        checkBoundsForInsertion(index);
+
+        int position = index + 1;
+        Node<T> newNode = new Node<>(value, 0, 0);
+
+        if(index==size){
+            if(size==1){
+                // set new node x value to previous node's x value
+                // set new node's y value """"
+            } 
+            else {//extrapolate direction from last 2 nodes
+                // get dx and dy from last 2 nodes
+                // set new node's x to previous node's x + dx;
+                // same for y
+            }
+        }
+        else { //insertion at middle or at head\
+            Node old = getNodeAt(position);
+            SnakeCell<T> old = old.getCell();
+    }
 
 
 
