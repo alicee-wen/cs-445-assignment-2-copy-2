@@ -178,9 +178,13 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
     public void insertAt(int index, T value){
         
         checkInitialization();
-        checkBoundsForInsertion(index);
-
         int position = index + 1;
+
+        if(position <=0 0 || position > size){
+            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
+        }
+
+
         Node<T> newNode = new Node<>(value, 0, 0);
         // SnakeCell<T> newCell = newNode.getCell();
         // int prevX;
@@ -435,11 +439,11 @@ private void checkBounds(int index){
 }
 
 // ==============================================================================================
-private void checkBoundsForInsertion(int index){
-  if((index<0) || (index > size)){
-    throw new IndexOutOfBoundsException();
-  }
-}
+// private void checkBoundsForInsertion(int position){
+//   if((position<=0) || (position > size)){
+//     throw new IndexOutOfBoundsException();
+//   }
+// }
 
 
 // ==============================================================================================
