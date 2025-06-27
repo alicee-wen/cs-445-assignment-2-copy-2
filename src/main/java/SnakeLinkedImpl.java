@@ -130,6 +130,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @param value the value to assign to the new tail cell
      * @throws IllegalStateException if the snake is not initialized
      */
+    @Override
     public void grow(T value){
         checkInitialization();
         pending[pendingGrows] = value;
@@ -173,6 +174,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @throws IndexOutOfBoundsException if the index is invalid
      * @throws IllegalStateException if the snake is not initialized
      */
+    @Override
     public void insertAt(int index, T value){
         
         checkInitialization();
@@ -278,6 +280,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @throws IndexOutOfBoundsException if the index is invalid
      * @throws IllegalStateException if the snake is not initialized
      */
+    @Override
     public SnakeCell<T> getAt(int index){
         checkInitialization();
         checkBounds(index);
@@ -293,6 +296,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @return the length of the snake
      * @throws IllegalStateException if the snake is not initialized
      */
+    @Override
     public int length(){
         checkInitialization();
         return size;
@@ -315,16 +319,71 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      *         false if the move was aborted due to a collision with the
      *         snake's own body.
      */
+    @Override
     public boolean move(String direction){
         checkInitialization();
 
-        if(!direction.equals("U") && !direction.equals("D") &&
-           !direction.equals("L") && !direction.equals("R")){
-            throw new IllegalArgumentException("Invalid direction");
+        // if(!direction.equals("U") && !direction.equals("D") &&
+        //    !direction.equals("L") && !direction.equals("R")){
+        //     throw new IllegalArgumentException("Invalid direction");
+        // }
+
+
+        int dx = 0;
+        int dy = 0;
+        if(direction.equals("U")){
+            dy=1;
+        }
+        else if (direction.equals("D")){
+            dy = -1;
+        }
+        else if (direction.equals("L")){
+            dx = -1;
+        }
+        else if (direction.equals("R")){
+            dx = 1;
+        }
+        else {
+            throw new IllegalArgumentException();
         }
 
+        for(int i = size; i>=0; i--){
+            getNodeAt(i+1).getCell().x = getNodeAt(i).getCell().x;
+            getNodeAt(i+1).getCell().y = getNodeAt(i).getCell().y;
+        }
+
+        Node<T> headNode = getNodeAt(1);
+        headNode.getCell().x += dx;
+        headNode.getCell().y += dy;
+
+        // Check for collision with self    
+        for(int j = 1; j < size; j++){
+                    if(getNodeAt(j).getCell().x == headNode.getCell().x && getNodeAt(j).getCell().y == headNode.getCell().y){
+                        // Reset the head position to the previous position
+                        headNode.getCell().x -= dx;
+                        headNode.getCell().y -= dy;
+                        return false; // Collision detected, move aborted
+                    }
+                }
+
+        if(pendingGrows > 0){
+            Node<T> newTail = new Node<>(pending[0], 0, 0);
+            Node<T> oldTail = getNodeAt(size);
+            oldTail.setNextNode(newTail);
+
+            for (int i = 0; i < pendingGrows - 1; i++) {
+                pending[i] = pending[i + 1];
+            }
+            pending[pendingGrows - 1] = null; // Clear the last element
+            pendingGrows--;
+            size++;
+        }
+        else{
+            Node<T> newTail = new Node<>(null, 0, 0);
+        }
+        
         return true;
-//
+
     }
 
 
@@ -343,10 +402,16 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @return true if the snake occupies the given position, false otherwise
      * @throws IllegalStateException if the snake is not initialized
      */
+    @Override
     public boolean checkCollision(int x, int y){
         checkInitialization();
 
-        return true;
+        for(int i = 1; i <= size; i++){
+            if (getNodeAt(i).getCell().x == x && getNodeAt(i).getCell().y == y){
+                return true; // Collision detected
+            }
+        }
+        return false;
     }
 
 
@@ -364,7 +429,7 @@ private void checkInitialization(){
 // ==============================================================================================
 
 private void checkBounds(int index){
-  if((index<0) || (index >= size)) {
+  if((index<0) || (index > size)) {
       throw new IndexOutOfBoundsException();
   }
 }
@@ -377,6 +442,7 @@ private void checkBoundsForInsertion(int index){
 }
 
 
+// ==============================================================================================
 public boolean isEmpty()
    {
       boolean result;
