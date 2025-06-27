@@ -58,6 +58,23 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         initialized = false;
         pendingGrows=0;
     }
+
+
+     public Node<T> getNodeAt(int givenPosition)
+	{
+		assert !isEmpty() && (1 <= givenPosition) && (givenPosition <= size);
+		Node<T> currentNode = head;
+		
+      // Traverse the chain to locate the desired node
+      // (skipped if givenPosition is 1)
+		for (int counter = 1; counter < givenPosition; counter++)
+			currentNode = currentNode.getNextNode();
+		
+		assert currentNode != null;
+      
+		return currentNode;
+    }
+
     // ==============================================================================================
 
     /**
@@ -140,33 +157,58 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         SnakeCell<T> newCell = newNode.getCell();
         int prevX;
         int prevY; 
-        
+        int dx;
+        int dy;
+
         if(index==size){
+            Node<T> newTail = new Node<>(value, 0, 0);
+            Node<T> oldTail = getNodeAt(size);
+            oldTail.setNextNode(newTail);
+
             if(size==1){
-                newCell.setX()
-                // set new node x value to previous node's x value
-                // set new node's y value """"
+                newNode.cell.x = head.getCell().x + 1;
+                newNode.cell.y = head.getCell().y;
             } 
             else {//extrapolate direction from last 2 nodes
                 // get dx and dy from last 2 nodes
+                dx = getNodeAt(size).getCell().x - getNodeAt(size-1).getCell().x;
+                dy = getNodeAt(size).getCell().y - getNodeAt(size-1).getCell().y;
+
                 // set new node's x to previous node's x + dx;
-                // same for y
+                newNode.cell.x = getNodeAt(size).getCell().x + dx;
+                newNode.cell.y = getNodeAt(size).getCell().y + dy;
+            } 
+        }
+        else { // insertion in middle or at head
+            Node<T> oldNode = getNodeAt(position);
+            // Node<T> newTail = getNodeAt(size);
+            // newTail = new Node<>(null, 0 0);
+
+            for (int i = size; i >= position; i--){
+                Node<T> currentNode = getNodeAt(i);
+                Node<T> nextNode = getNodeAt(i+1);
+
+                nextNode.getCell().value = currentNode.getCell().value;
+            }
+
+            newNode = new Node(oldNode.getCell().x, oldNode.getCell(y), value);
+
+            if(size==1){
+                getNodeAt(size).getCell().x = getNodeAt(size-1).getCell().x + 1;
+                getNodeAt(size).getCell().y = getNodeAt(size-1).getCell().y;
+            }
+            else {
+                dx = getNodeAt(size).getCell().x - getNodeAt(size-1).getCell().x;
+                dy = getNodeAt(size).getCell().y - getNodeAt(size-1).getCell().y;
+
+                getNodeAt(size).getCell().x = getNodeAt(size-1).getCell().x + dx;
+                getNodeAt(size).getCell().y = getNodeAt(size-1).getCell().y + dy;
             }
         }
-        else { //insertion at middle or at head\
-            Node<T> oldNode = getNodeAt(position);
-            SnakeCell<T> oldCell = oldNode.getCell();
 
-            // shift towards tail
-
+        size++;
 
     }
-
-
-
-
-
-
 
 
     // ==============================================================================================
@@ -199,13 +241,6 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
 
     }
 
-
-
-
-
-
-
-
     // ==============================================================================================
 
     /**
@@ -222,12 +257,6 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
 
         return getNodeAt(index + 1).getCell();
     }
-
-
-
-
-
-
 
     // ==============================================================================================
 
@@ -259,7 +288,17 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      *         false if the move was aborted due to a collision with the
      *         snake's own body.
      */
-    public boolean move(String direction);
+    public boolean move(String direction){
+        checkInitialization();
+
+        if(!direction.equals("U") && !direction.equals("D") &&
+           !direction.equals("L") && !direction.equals("R")){
+            throw new IllegalArgumentException("Invalid direction");
+        }
+
+        return true;
+
+    }
 
 
 
@@ -278,9 +317,11 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
      * @throws IllegalStateException if the snake is not initialized
      */
     public boolean checkCollision(int x, int y){
+        checkInitialization();
 
+        return true;
     }
-}
+
 
 
 
@@ -328,21 +369,7 @@ public boolean isEmpty()
    } // end 
 
 
-   private Node<T> getNodeAt(int givenPosition)
-	{
-		assert !isEmpty() && (1 <= givenPosition) && (givenPosition <= size);
-		Node<T> currentNode = head;
-		
-      // Traverse the chain to locate the desired node
-      // (skipped if givenPosition is 1)
-		for (int counter = 1; counter < givenPosition; counter++)
-			currentNode = currentNode.getNextNode();
-		
-		assert currentNode != null;
-      
-		return currentNode;
-    }
-
+  
 
     public void add(int newPosition, SnakeCell<T> newEntry)
 	{
@@ -394,3 +421,4 @@ public boolean isEmpty()
         cell.y = y;
 }
 
+}
