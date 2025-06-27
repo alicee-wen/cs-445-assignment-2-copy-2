@@ -324,7 +324,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         }
 
         return true;
-
+//
     }
 
 
