@@ -52,10 +52,12 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
     private int pendingGrows;
     private boolean initialized;
     
+    @SuppressWarnings("unchecked")
     public SnakeLinkedImpl(){
         head = null;
         size = 0;
         initialized = false;
+        pending = (T[]) new Object[10];
         pendingGrows=0;
     }
 
@@ -75,6 +77,30 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
 		return currentNode;
     }
 
+    // public void remove(int givenPosition)
+	// {
+    
+    //   if ((givenPosition >= 1) && (givenPosition <= size))
+    //   {
+    //      assert !isEmpty();
+
+    //      if (givenPosition == 1)                 // Case 1: Remove first entry
+    //      {
+    //         Node<T> firstNode = firstNode.getNextNode(); // Remove entry
+    //      }
+    //      else                                    // Case 2: Not first entry
+    //      {
+    //         Node<T> nodeBefore = getNodeAt(givenPosition - 1);
+    //         Node<T> nodeToRemove = nodeBefore.getNextNode();
+    //         Node<T> nodeAfter = nodeToRemove.getNextNode();
+    //         nodeBefore.setNextNode(nodeAfter);   // Remove entry
+    //      } // end if
+
+    //      return result;                          // Return removed entry
+    //   }
+    //   else
+    //      throw new IndexOutOfBoundsException("Illegal position given to remove operation.");
+	// }
     // ==============================================================================================
 
     /**
@@ -88,7 +114,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
 
     @Override
     public void initialize(T headValue, int x, int y){
-        head = new Node(headValue, x, y);
+        head = new Node<>(headValue, x, y);
         initialized = true;
         size = 1;
         }
@@ -125,15 +151,15 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
     @Override
     public void shrink(){
         checkInitialization();
+      
         if (size==1) return;
 
-        assert !isEmpty();
+        // assert !isEmpty();
 
         Node<T> oldTail = getNodeAt(size);
         oldTail = null;
         size--;
     }
-
 
 
     // ==============================================================================================
@@ -154,9 +180,9 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
 
         int position = index + 1;
         Node<T> newNode = new Node<>(value, 0, 0);
-        SnakeCell<T> newCell = newNode.getCell();
-        int prevX;
-        int prevY; 
+        // SnakeCell<T> newCell = newNode.getCell();
+        // int prevX;
+        // int prevY; 
         int dx;
         int dy;
 
@@ -191,7 +217,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
                 nextNode.getCell().value = currentNode.getCell().value;
             }
 
-            newNode = new Node(oldNode.getCell().x, oldNode.getCell(y), value);
+            newNode = new Node<>(value, oldNode.getCell().x, oldNode.getCell().y);
 
             if(size==1){
                 getNodeAt(size).getCell().x = getNodeAt(size-1).getCell().x + 1;
@@ -232,7 +258,8 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         for (int i = index; i < size - 1; i++) {
             Node<T> currentNode = getNodeAt(i);
             Node<T> nextNode = getNodeAt(i+1);
-            currentNode.setData(nextNode.getCell());
+            // currentNode.setData(nextNode.getCell());
+            currentNode.getCell().value = nextNode.getCell().value;
         }
 
         Node<T> tail = getNodeAt(size);
