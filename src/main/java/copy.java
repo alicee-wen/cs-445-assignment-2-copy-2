@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
+public class copy<T> implements SnakeInterface<T> {
 
     private class Node<T> {
         private SnakeCell<T> cell; // Entry in list
@@ -163,7 +163,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
     }
 
 
-     // ==============================================================================================
+    // ==============================================================================================
 
     /**
      * Inserts a new cell at the specified index in the body.
@@ -194,7 +194,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         }
 
         Node<T> newNode = new Node<>(value, 0, 0);
-        Node<T> oldTail = getNodeAt(size);
+        Node<T> oldTail = getNodeAt(position);
         // SnakeCell<T> newCell = newNode.getCell();
         int dx;
         int dy;
@@ -216,29 +216,48 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
                 newX = prevX + 1;
                 oldHead.getCell().x = newX;
                 newNode.next = oldHead;
+
+                size++;
             }
             else{
                 dx = getNodeAt(size).getCell().x - getNodeAt(size-1).getCell().x;
                 dy = getNodeAt(size).getCell().y - getNodeAt(size-1).getCell().y;
 
-                newNode = new Node<>(value, oldTail.getCell().x + dx, oldTail.getCell().y + dy);
+                Node<T> oldTail = getNodeAt(size);
+                newNode = new Node<>(value, getNodeAt(size).getCell().x + dx, getNodeAt(size).getCell().y + dy);
                 oldTail.next = newNode;
 
             }
-            size++;
-        }
-        else { 
-           Node<T> oldNode = getNodeAt(position);
-           Node<T> prev = getNodeAt(position-1);
+           
+            // Node<T> oldTail = getNodeAt(size);
+            // oldTail.setNextNode(newTail);
 
+            // if(size==1){
+            //     newNode.cell.x = head.getCell().x + 1;
+            //     newNode.cell.y = head.getCell().y;
+            // } 
+            // else {//extrapolate direction from last 2 nodes
+            //     // get dx and dy from last 2 nodes
+            //     dx = getNodeAt(size).getCell().x - getNodeAt(size-1).getCell().x;
+            //     dy = getNodeAt(size).getCell().y - getNodeAt(size-1).getCell().y;
+
+            //     // set new node's x to previous node's x + dx;
+            //     newNode.cell.x = getNodeAt(size).getCell().x + dx;
+            //     newNode.cell.y = getNodeAt(size).getCell().y + dy;
+            // } 
+        }
+        else { //inserting in middle or at head
+           Node<T> oldNode = getNodeAt(position);
            prevX = oldNode.getCell().x;
            prevY = oldNode.getCell().y;
 
            newNode = new Node<>(value, prevX, prevY);
 
+           Node<T> prev = getNodeAt(position-1);
+           Node<T> after = getNodeAt(position+1);
            prev.next = newNode;
-           newNode.next = oldNode;
-           size++;
+           newNode.next=after;
+      
 
             for (int i = size; i > position; i--){
                 Node<T> currentNode = getNodeAt(i);
@@ -248,18 +267,26 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
                 currentNode.getCell().y = prevNode.getCell().y;
             }
 
-           
+            // newNode = new Node<>(value, oldNode.getCell().x, oldNode.getCell().y);
+
+            // if(size==1){
+            //     getNodeAt(size).getCell().x = getNodeAt(size-1).getCell().x + 1;
+            //     getNodeAt(size).getCell().y = getNodeAt(size-1).getCell().y;
+            // }
             Node<T> newTail = getNodeAt(size);
             
-            if(size==2){
+            if(size==1){
                 prevX = oldHead.getCell().x;
                 prevY = oldHead.getCell().y;
+
 
                 newNode = new Node<>(value, prevX, prevY);
                 
                 newX = prevX + 1;
                 oldHead.getCell().x = newX;
                 newNode.next = oldHead;
+
+       
             }
             else{
                 dx = getNodeAt(size-1).getCell().x - getNodeAt(size-2).getCell().x;
@@ -267,7 +294,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
                 newTail.getCell().x = getNodeAt(size-1).getCell().x + dx;
                 newTail.getCell().y = getNodeAt(size-1).getCell().y + dy;
             }
-            
+            size++;
 
             
             
