@@ -180,10 +180,18 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         checkInitialization();
         int position = index + 1;
 
-        if(position <= 0 || position > size){
-            throw new IndexOutOfBoundsException("Index out of bounds: " + index);
+        if(position < 0 || position > size){
+            throw new IndexOutOfBoundsException("Invalid index");
         }
 
+        System.out.println("Call to Insert at index: " + index + " and value: " + value);
+        System.out.println("State of snake: ");
+        for (int i = 1; i<=size; i++){
+            System.out.println("index: " + i);
+            System.out.print("x: " + getNodeAt(i).getCell().x + " ");
+            System.out.print("y: " + getNodeAt(i).getCell().x + " ");
+            System.out.print("value: " + getNodeAt(i).getCell().value + " ");
+        }
 
         Node<T> newNode = new Node<>(value, 0, 0);
         // SnakeCell<T> newCell = newNode.getCell();
@@ -192,7 +200,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         int dx;
         int dy;
 
-        if(index==size){
+        if(position==size){
             Node<T> newTail = new Node<>(value, 0, 0);
             Node<T> oldTail = getNodeAt(size);
             oldTail.setNextNode(newTail);
@@ -239,6 +247,16 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         }
 
         size++;
+
+        System.out.println("after insert: ");
+        System.out.println("State of snake: ");
+        for (int i = 1; i<=size; i++){
+            System.out.println("index: " + i);
+            System.out.print("x: " + getNodeAt(i).getCell().x + " ");
+            System.out.print("y: " + getNodeAt(i).getCell().x + " ");
+            System.out.print("value: " + getNodeAt(i).getCell().value + " ");
+        }
+
 
     }
 
@@ -331,7 +349,25 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         //    !direction.equals("L") && !direction.equals("R")){
         //     throw new IllegalArgumentException("Invalid direction");
         // }
+        System.out.println("Call to move, in direction: " + direction);
 
+        System.out.println("pending grow count: " + pendingGrows);
+
+        System.out.println("pending array: " );
+        for (int i = 0; i < pendingGrows; i++) {
+                System.out.print(pending[i]);
+            }
+        System.out.println(" ");
+        System.out.println("end of print pending array");
+
+        System.out.println("Before move: ");
+        for (int i = 1; i<=size; i++){
+            System.out.println("index: " + i);
+            System.out.print("x: " + getNodeAt(i).getCell().x + " ");
+            System.out.print("y: " + getNodeAt(i).getCell().x + " ");
+            System.out.print("value: " + getNodeAt(i).getCell().value + " ");
+            System.out.println();
+        }
 
         int dx = 0;
         int dy = 0;
@@ -351,32 +387,55 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
             throw new IllegalArgumentException();
         }
 
-        for(int i = size; i>=2; i--){
-            Node<T> curr = getNodeAt(i);
-            Node<T> prev = getNodeAt(i-1);
-            curr.getCell().x = prev.getCell().x;
-            curr.getCell().y = prev.getCell().y;
-        }
-
+        
         Node<T> headNode = getNodeAt(1);
-        headNode.getCell().x += dx;
-        headNode.getCell().y += dy;
+        int oldHeadX = headNode.getCell().x;
+        int oldHeadY = headNode.getCell().y;
+
+        int newX = headNode.getCell().x + dx;
+        int newY = headNode.getCell().y + dy;
+
+        System.out.println("newx: " + newX + "newY: " + newY);
 
         // Check for collision with self    
-        for(int j = 1; j < size; j++){
-                    if(getNodeAt(j).getCell().x == headNode.getCell().x && getNodeAt(j).getCell().y == headNode.getCell().y){
-                        // Reset the head position to the previous position
-                        headNode.getCell().x -= dx;
-                        headNode.getCell().y -= dy;
+        for(int j = 2; j <= size; j++){
+                    if(getNodeAt(j).getCell().x == newX && getNodeAt(j).getCell().y == newY){
                         return false; // Collision detected, move aborted
                     }
                 }
 
+         
+
+        for(int i = size; i>=2; i--){
+
+            Node<T> curr = getNodeAt(i);
+            Node<T> prev = getNodeAt(i-1);
+                
+            if (i == 2){
+                curr.getCell().x = oldHeadX;
+                curr.getCell().y = oldHeadY;
+            }
+            else{
+                curr.getCell().x = prev.getCell().x;
+                curr.getCell().y = prev.getCell().y;
+            }
+                
+               
+        }
+        Node<T> oldTail = getNodeAt(size);
+        int oldTailX = oldTail.getCell().x;
+        int oldTailY = oldTail.getCell().y;
+
+
+        System.out.println("Old Tail Coords: " + oldTail.getCell().x + " ; " + oldTail.getCell().y);
+       headNode.getCell().x = newX;
+        headNode.getCell().y = newY;
+        System.out.println("New Head coords: " + headNode.getCell().x +  " ; " + headNode.getCell().y); 
+
         if(pendingGrows > 0){
-            
-            Node<T> oldTail = getNodeAt(size);
-            Node<T> newTail = new Node<>(pending[0], oldTail.getCell().x, oldTail.getCell().y);
-            oldTail.setNextNode(newTail);
+            Node<T> newTail = new Node<>(pending[0], oldTailX, oldTailY);
+            System.out.println("new tail : " + newTail.getCell().x + " ; " + newTail.getCell().y);
+            oldTail.next = newTail;
 
             for (int i = 0; i < pendingGrows - 1; i++) {
                 pending[i] = pending[i + 1];
@@ -386,9 +445,18 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
             size++;
         }
         else{
-            Node<T> newTail = new Node<>(null, 0, 0);
+            Node<T> beforeTail = getNodeAt(size-1);
+            beforeTail.next = null;
         }
-        
+
+        System.out.println("after move: ");
+        for (int i = 1; i<=size; i++){
+            System.out.println("index: " + i);
+            System.out.print("x: " + getNodeAt(i).getCell().x + " ");
+            System.out.print("y: " + getNodeAt(i).getCell().y + " ");
+            System.out.print("value: " + getNodeAt(i).getCell().value + " ");
+        }
+        System.out.println("End of call to move");
         return true;
 
     }
