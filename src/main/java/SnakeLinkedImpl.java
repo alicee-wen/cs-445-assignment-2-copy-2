@@ -73,7 +73,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
 
     @Override
     public void initialize(T headValue, int x, int y){
-        head = new Node<>(headValue, x, y);
+        head = new Node<T>(headValue, x, y);
         initialized = true;
         size = 1;
         }
@@ -162,7 +162,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
                 prevX = oldHead.getCell().x;
                 prevY = oldHead.getCell().y;
 
-                newNode = new Node<>(value, prevX+1, prevY); //new tail direction assumed to be to the right, x+1
+                newNode = new Node<T>(value, prevX+1, prevY); //new tail direction assumed to be to the right, x+1
                 
                 oldHead.next = newNode;
             }
@@ -171,7 +171,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
                 dx = getNodeAt(size).getCell().x - getNodeAt(size-1).getCell().x;
                 dy = getNodeAt(size).getCell().y - getNodeAt(size-1).getCell().y;
 
-                newNode = new Node<>(value, oldTail.getCell().x + dx, oldTail.getCell().y + dy);
+                newNode = new Node<T>(value, oldTail.getCell().x + dx, oldTail.getCell().y + dy);
                 oldTail.next = newNode;
 
             }
@@ -183,7 +183,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
            prevX = oldNode.getCell().x;
            prevY = oldNode.getCell().y;
 
-           newNode = new Node<>(value, prevX, prevY);
+           newNode = new Node<T>(value, prevX, prevY);
            size++;
 
            if (prev == null){
@@ -213,7 +213,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
                 prevX = oldHead.getCell().x;
                 prevY = oldHead.getCell().y;
 
-                newNode = new Node<>(value, prevX, prevY);
+                newNode = new Node<T>(value, prevX, prevY);
                 
                 newX = prevX + 1;
                 oldHead.getCell().x = newX;
@@ -381,7 +381,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         //if there is a pending grow, make that cell active
         if(pendingGrows > 0){
             //assign new tail with pending value and previous tail's coords
-            Node<T> newTail = new Node<>(pending[0], oldTailX, oldTailY);
+            Node<T> newTail = new Node<T>(pending[0], oldTailX, oldTailY);
             oldTail.next = newTail;
 
             //update state of pendingGrows array
