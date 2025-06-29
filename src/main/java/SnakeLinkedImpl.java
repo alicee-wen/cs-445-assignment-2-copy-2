@@ -183,7 +183,7 @@ public class SnakeLinkedImpl<T> implements SnakeInterface<T> {
         if(index < 0 || index > size ){
             throw new IndexOutOfBoundsException("Invalid index");
         }
-
+//
         System.out.println("Call to Insert at position: " + position + " and value: " + value);
         System.out.println("State of snake: ");
         for (int i = 1; i<=size; i++){
